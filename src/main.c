@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <igraph/igraph.h>
 
+#include "graph_construction.h"
 
 void print_help() {
 	printf("Usage:\n$partitions2graph -i graphml_filename -s split_filename -a attributes_split_filename -o graphml_output_filename\n");
@@ -39,10 +40,11 @@ int main(int argc, char **argv) {
 					break;
 		}
 	}
-	if (graphml_filename == NULL) {
+	if (graphml_filename == NULL || attributes_filename == NULL
+			|| graphml_output_filename == NULL || split_filename == NULL) {
 		print_help();
 	} else {
-//		ret = read_graph_and_export(graphml_filename, output_metis_filename, attributes_filename);
+		ret = read_graph_paritions_and_export(graphml_filename, split_filename, attributes_filename, graphml_output_filename);
 		switch (ret) {
 			case -1:
 				printf("I could not open '%s'\n", argv[1]);

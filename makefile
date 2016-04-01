@@ -3,30 +3,30 @@ LIBS := -ligraph
 RM := rm -f
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-./src/export_nodes.c \
+./src/graph_construction.c \
 ./src/main.c 
 
 OBJS += \
-./src/export_nodes.o \
+./src/graph_construction.o \
 ./src/main.o 
 
 C_DEPS += \
-./src/export_nodes.d \
+./src/graph_construction.d \
 ./src/main.d 
 
-all: graphml2metis
+all: partitions2graph
 
 # Tool invocations
 graphml2metis: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "graphml2metis" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc  -o "partitions2graph" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) graphml2metis
+	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) partitions2graph
 	-@echo ' '
 
 # Each subdirectory must supply rules for building sources it contributes
