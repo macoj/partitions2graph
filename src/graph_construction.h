@@ -1,16 +1,16 @@
 /*
- * export_nodes.h
+ * graph_construction.h
  *
- *  Created on: Aug 2, 2015
+ *  Created on: Apr 1, 2016
  *      Author: marcos
  */
 
-#ifndef EXPORT_NODES_H_
-#define EXPORT_NODES_H_
+#ifndef GRAPH_CONSTRUCTION_H_
+#define GRAPH_CONSTRUCTION_H_
 
-int read_graph_and_export(const char * graph_file_name,
-						  const char * output_metis_filename,
-						  const char * attributes_filename);
+int read_graph_partitions_and_export(const char * graphml_file_name,
+								     const char * split_file_name,
+									 const char * attributes_file_name,
+									 const char * graphml_output_file_name);
 
-
-#endif /* EXPORT_NODES_H_ */
+#endif /* GRAPH_CONSTRUCTION_H_ */

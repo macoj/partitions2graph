@@ -17,7 +17,7 @@ C_DEPS += \
 all: partitions2graph
 
 # Tool invocations
-graphml2metis: $(OBJS) $(USER_OBJS)
+partitions2graph: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
 	gcc  -o "partitions2graph" $(OBJS) $(USER_OBJS) $(LIBS)

@@ -1,7 +1,7 @@
 /*
  * main.c
  *
- *  Created on: Aug 2, 2015
+ *  Created on: Apr 1, 2016
  *      Author: marcos
  */
 #include <stdio.h>
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 			|| graphml_output_filename == NULL || split_filename == NULL) {
 		print_help();
 	} else {
-		ret = read_graph_paritions_and_export(graphml_filename, split_filename, attributes_filename, graphml_output_filename);
+		ret = read_graph_partitions_and_export(graphml_filename, split_filename, attributes_filename, graphml_output_filename);
 		switch (ret) {
 			case -1:
 				printf("I could not open '%s'\n", argv[1]);
