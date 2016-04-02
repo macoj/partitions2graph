@@ -11,7 +11,7 @@
 
 #include "graph_construction.h"
 
-gint ** create_table_node_clusters(const char * attributes_file_name, const char * split_file_name) {
+glong * create_table_node_clusters(const char * attributes_file_name, const char * split_file_name) {
 	int id_column = -1;
 	int total_number_of_items = 0;
 	int item = 0;
@@ -26,7 +26,7 @@ gint ** create_table_node_clusters(const char * attributes_file_name, const char
 	FILE * split_file = NULL;
 	FILE * attributes_file = NULL;
 
-	gint ** table = NULL;
+	glong * table = NULL;
 	GRegex *regex = g_regex_new ("([\n\"])+", G_REGEX_DOTALL | G_REGEX_OPTIMIZE, 0, NULL);
 
 
@@ -55,7 +55,7 @@ gint ** create_table_node_clusters(const char * attributes_file_name, const char
 		}
 		fseek(split_file, 0L, SEEK_SET);
 
-		table = (gint **) g_malloc0(sizeof(gint *) * total_number_of_items);
+		table = (glong *) g_malloc0(sizeof(glong) * total_number_of_items);
 
 		while ((byte_read = getline(&line, &line_length, attributes_file)) != -1) {
 			columns = g_strsplit(line, ",", -1);
@@ -83,7 +83,7 @@ gint ** create_table_node_clusters(const char * attributes_file_name, const char
 	return table;
 }
 
-void construct_graph_from_partitions(const igraph_t* graph, gint ** table, const char * graphml_output_file_name) {
+void construct_graph_from_partitions(const igraph_t* graph, glong * table) {
 	igraph_vs_t vertex_selector;
 	igraph_vs_t adjacent_vertex_selector;
 	igraph_vit_t vertex_iterator;
@@ -91,8 +91,6 @@ void construct_graph_from_partitions(const igraph_t* graph, gint ** table, const
 	igraph_integer_t nodes_number;
 	igraph_vector_t vertices_attributes_types;
 	igraph_strvector_t vertices_attributes_names;
-
-	igraph_t output_graph;
 
 	int id_attribute = -1;
 
@@ -108,9 +106,6 @@ void construct_graph_from_partitions(const igraph_t* graph, gint ** table, const
 	}
 
 	if (id_attribute != -1) {
-		// outputgraph
-//		igraph_empty(&output_graph, 0, IGRAPH_UNDIRECTED);
-
 		// vertices selector
 		igraph_vs_all(&vertex_selector);
 		igraph_vs_size(graph, &vertex_selector, &nodes_number);
@@ -153,24 +148,22 @@ void construct_graph_from_partitions(const igraph_t* graph, gint ** table, const
 
 int read_graph_partitions_and_export(const char * graphml_file_name,
 									 const char * split_file_name,
-									 const char * attributes_file_name,
-									 const char * graphml_output_file_name) {
+									 const char * attributes_file_name) {
 	int ret = -1;
 	FILE * input_file = NULL;
 
-	gint ** table = create_table_node_clusters(attributes_file_name, split_file_name);
+	glong * table = create_table_node_clusters(attributes_file_name, split_file_name);
 
 	if (graphml_file_name != NULL) {
 		input_file = fopen(graphml_file_name, "r");
 	}
 
 	if (input_file != NULL && table != NULL) {
-		printf("asd");
 		igraph_i_set_attribute_table(&igraph_cattribute_table);  // this must be before the graph creation.
 		igraph_t graph;
 		ret = igraph_read_graph_graphml(&graph, input_file, 0);
 		if (ret == IGRAPH_SUCCESS) {
-			construct_graph_from_partitions(&graph, table, graphml_output_file_name);
+			construct_graph_from_partitions(&graph, table);
 			igraph_destroy(&graph);
 		}
 	}
