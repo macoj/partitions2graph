@@ -5,6 +5,7 @@
  *      Author: marcos
  */
 #include <stdio.h>
+#include <getopt.h>
 #include <unistd.h>
 #include <igraph/igraph.h>
 #include <glib.h>
