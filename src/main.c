@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <igraph/igraph.h>
+#include <glib.h>
 
 #include "graph_construction.h"
 
@@ -15,6 +16,15 @@ void print_help() {
 }
 
 int main(int argc, char **argv) {
+//	const char * attributes_file_name = "/home/marcos/pyworkspace/events_mapper/data/shapefile/cities/san_francisco/san_francisco_voronoi.ametis";
+//	const char * split_file_name = "/home/marcos/pyworkspace/events_mapper/data/shapefile/cities/san_francisco/split_001000_01";
+//	gint ** table = create_table_node_clusters(attributes_file_name, split_file_name);
+//
+//    for (int i = 0; i < 10; ++i) {
+//    	printf("%d: %d\n", i, table[i]);
+//	}
+
+//    exit(0);
 	int ret = -1;
 	int opt = 0;
 	char * graphml_filename = NULL;

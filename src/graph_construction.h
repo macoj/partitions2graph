@@ -12,5 +12,4 @@ int read_graph_partitions_and_export(const char * graphml_file_name,
 								     const char * split_file_name,
 									 const char * attributes_file_name,
 									 const char * graphml_output_file_name);
-
 #endif /* GRAPH_CONSTRUCTION_H_ */
