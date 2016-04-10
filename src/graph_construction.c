@@ -38,12 +38,11 @@ glong * create_table_node_clusters(const char * attributes_file_name, const char
 	}
 
 	if (attributes_file != NULL && split_file != NULL) {
-
 		// we need to know which column is the 'id' column
 		if (getline(&attribute_line, &line_length, attributes_file) != -1) {
 			columns = g_strsplit(attribute_line, ",", -1);
 			for (int i = 0; i < g_strv_length(columns); ++i) {
-				if (g_strcmp0(columns[i], "id") == 0) {
+				if (g_strcmp0(g_strstrip(columns[i]), "id") == 0) {
 					id_column = i;
 				}
 			}
@@ -51,25 +50,29 @@ glong * create_table_node_clusters(const char * attributes_file_name, const char
 			columns = NULL;
 		}
 
-		// how many nodes?
-		while ((byte_read = getline(&attribute_line, &line_length, split_file)) != -1) {
-			total_number_of_items += 1;
-		}
-		fseek(split_file, 0L, SEEK_SET);
-
-		table = (glong *) g_malloc0(sizeof(glong) * total_number_of_items);
-
-		while ((byte_read = getline(&attribute_line, &line_length, attributes_file)) != -1) {
-			columns = g_strsplit(attribute_line, ",", -1);
-			if (getline(&partition_line, &line_length, split_file) != -1) {
-				gchar * key = g_regex_replace (regex, columns[id_column], -1, 0, "", 0, NULL);
-				gchar * value = g_regex_replace (regex, partition_line, -1, 0, "", 0, NULL);
-				table[atol(key)] = atol(value);
-				g_free(key);
-				g_free(value);
+		if (id_column != -1) {
+			// how many nodes?
+			while ((byte_read = getline(&attribute_line, &line_length, split_file)) != -1) {
+				total_number_of_items += 1;
 			}
-			item += 1;
-			g_strfreev(columns);
+			fseek(split_file, 0L, SEEK_SET);
+
+			table = (glong *) g_malloc0(sizeof(glong) * total_number_of_items);
+
+			while ((byte_read = getline(&attribute_line, &line_length, attributes_file)) != -1) {
+				columns = g_strsplit(attribute_line, ",", -1);
+				if (getline(&partition_line, &line_length, split_file) != -1) {
+					gchar * key = g_regex_replace (regex, columns[id_column], -1, 0, "", 0, NULL);
+					gchar * value = g_regex_replace (regex, partition_line, -1, 0, "", 0, NULL);
+					table[atol(key)] = atol(value);
+					g_free(key);
+					g_free(value);
+				}
+				item += 1;
+				g_strfreev(columns);
+			}
+		} else {
+			printf("I can't find 'id' column.\n");
 		}
 		// you might need to create a FREE helper TODO
 
@@ -153,6 +156,7 @@ int read_graph_partitions_and_export(const char * graphml_file_name,
 									 const char * attributes_file_name) {
 	int ret = -1;
 	FILE * input_file = NULL;
+
 
 	glong * table = create_table_node_clusters(attributes_file_name, split_file_name);
 
