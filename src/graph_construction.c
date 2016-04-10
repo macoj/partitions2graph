@@ -19,8 +19,8 @@ glong * create_table_node_clusters(const char * attributes_file_name, const char
 	size_t line_length = 0;
 	ssize_t byte_read;
 
-	char * line = NULL;
-	char * partition = NULL;
+	char * attribute_line = NULL;
+	char * partition_line = NULL;
 	gchar ** columns = NULL;
 
 	FILE * split_file = NULL;
@@ -38,9 +38,10 @@ glong * create_table_node_clusters(const char * attributes_file_name, const char
 	}
 
 	if (attributes_file != NULL && split_file != NULL) {
+
 		// we need to know which column is the 'id' column
-		if (getline(&line, &line_length, attributes_file) != -1) {
-			columns = g_strsplit(line, ",", -1);
+		if (getline(&attribute_line, &line_length, attributes_file) != -1) {
+			columns = g_strsplit(attribute_line, ",", -1);
 			for (int i = 0; i < g_strv_length(columns); ++i) {
 				if (g_strcmp0(columns[i], "id") == 0) {
 					id_column = i;
@@ -50,18 +51,19 @@ glong * create_table_node_clusters(const char * attributes_file_name, const char
 			columns = NULL;
 		}
 
-		while ((byte_read = getline(&line, &line_length, split_file)) != -1) {
+		// how many nodes?
+		while ((byte_read = getline(&attribute_line, &line_length, split_file)) != -1) {
 			total_number_of_items += 1;
 		}
 		fseek(split_file, 0L, SEEK_SET);
 
 		table = (glong *) g_malloc0(sizeof(glong) * total_number_of_items);
 
-		while ((byte_read = getline(&line, &line_length, attributes_file)) != -1) {
-			columns = g_strsplit(line, ",", -1);
-			if (getline(&partition, &line_length, split_file) != -1) {
+		while ((byte_read = getline(&attribute_line, &line_length, attributes_file)) != -1) {
+			columns = g_strsplit(attribute_line, ",", -1);
+			if (getline(&partition_line, &line_length, split_file) != -1) {
 				gchar * key = g_regex_replace (regex, columns[id_column], -1, 0, "", 0, NULL);
-				gchar * value = g_regex_replace (regex, partition, -1, 0, "", 0, NULL);
+				gchar * value = g_regex_replace (regex, partition_line, -1, 0, "", 0, NULL);
 				table[atol(key)] = atol(value);
 				g_free(key);
 				g_free(value);
@@ -94,7 +96,7 @@ void construct_graph_from_partitions(const igraph_t* graph, glong * table) {
 
 	int id_attribute = -1;
 
-	// NEED TO GET THE ID PROPERTY AND USE THE TABLE, THEN CREATE THE GRAPH
+	// what is the id attribute?
 	igraph_vector_init(&vertices_attributes_types, 0);
 	igraph_strvector_init(&vertices_attributes_names, 0);
 	igraph_cattribute_list(graph, NULL, NULL, &vertices_attributes_names, &vertices_attributes_types, NULL, NULL);
@@ -159,7 +161,7 @@ int read_graph_partitions_and_export(const char * graphml_file_name,
 	}
 
 	if (input_file != NULL && table != NULL) {
-		igraph_i_set_attribute_table(&igraph_cattribute_table);  // this must be before the graph creation.
+		igraph_i_set_attribute_table(&igraph_cattribute_table);  // this must be before any graph creation.
 		igraph_t graph;
 		ret = igraph_read_graph_graphml(&graph, input_file, 0);
 		if (ret == IGRAPH_SUCCESS) {
