@@ -22,7 +22,7 @@ call: clean partitions2graph
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) graph
+	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) partitions2graph
 	-@echo ' '
 
 # Each subdirectory must supply rules for building sources it contributes
