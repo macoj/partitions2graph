@@ -15,3 +15,4 @@ Example:
 # TODO
 * Support any type of id in the nodes. Now it assumes the id attribute is an integer number. 
 * Export graphml.
+* Better handling of .ametis files
